@@ -41,6 +41,7 @@ def get_allowed_origins() -> list[str]:
         cleaned_frontend = settings.frontend_url.strip().rstrip("/")
         if cleaned_frontend:
             raw_origins.add(cleaned_frontend)
+    raw_origins.add("https://agnettrust-20.vercel.app")
     raw_origins.add("https://agenttrust-20.vercel.app")
     return sorted(list(raw_origins))
 
@@ -54,7 +55,7 @@ async def lifespan(application: FastAPI):
     allowed_origins = get_allowed_origins()
     logger.info(f"Configured Frontend URL: {settings.frontend_url.strip().rstrip('/')}")
     logger.info(f"CORS Allowed Origins Count: {len(allowed_origins)}")
-    logger.info(f"CORS contains Vercel origin (https://agenttrust-20.vercel.app): {'https://agenttrust-20.vercel.app' in allowed_origins}")
+    logger.info(f"CORS contains Vercel origin (https://agnettrust-20.vercel.app): {'https://agnettrust-20.vercel.app' in allowed_origins}")
 
     if settings.app_env == "production":
         if settings.jwt_secret == "secret-key-1234567890" or len(settings.jwt_secret) < 32:

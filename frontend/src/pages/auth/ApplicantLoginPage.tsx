@@ -6,7 +6,7 @@ export const ApplicantLoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { loginAsApplicant } = useAuth();
   const [email, setEmail] = useState('alex.mercer@apextech.com');
-  const [password, setPassword] = useState('••••••••••••');
+  const [password, setPassword] = useState('password');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);

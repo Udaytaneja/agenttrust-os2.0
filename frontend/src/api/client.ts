@@ -23,7 +23,7 @@ const API_BASE_URL = getApiBaseUrl();
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL: `${API_BASE_URL.replace(/\/$/, '')}/api/v1`,
-  timeout: Number(import.meta.env.VITE_REQUEST_TIMEOUT_MS) || 8000,
+  timeout: Number(import.meta.env.VITE_REQUEST_TIMEOUT_MS) || 30000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -46,6 +46,12 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as any;
+
+    // Do NOT trigger refresh logic if the request itself was an authentication endpoint
+    const requestUrl = originalRequest?.url || '';
+    if (requestUrl.includes('/auth/login') || requestUrl.includes('/auth/refresh')) {
+      return Promise.reject(error);
+    }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;

@@ -6,7 +6,7 @@ export const BankerLoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { loginAsBanker } = useAuth();
   const [employeeId, setEmployeeId] = useState('BKR-7749-NY');
-  const [password, setPassword] = useState('••••••••••••');
+  const [password, setPassword] = useState('password');
   const [tokenCode, setTokenCode] = useState('894 201');
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
