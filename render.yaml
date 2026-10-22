@@ -4,7 +4,7 @@ services:
     env: python
     region: oregon
     plan: standard
-    buildCommand: "pip install -r requirements.txt && python -m alembic -c backend/alembic.ini upgrade head"
+    buildCommand: "pip install -r backend/requirements.txt && alembic upgrade head"
     startCommand: "gunicorn -k uvicorn.workers.UvicornWorker backend.app.main:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
     envVars:
       - key: APP_ENV
@@ -34,7 +34,7 @@ services:
       - key: YOLO_MODEL_PATH
         value: runs/detect/artifacts/training/doc_layout/real_yolo_002/train_run/weights/best.pt
       - key: OCR_ENABLED
-        value: "true"
+        value: "false"
 
   - type: web
     name: agenttrust-os-frontend

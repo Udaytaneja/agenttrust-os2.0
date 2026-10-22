@@ -33,10 +33,16 @@ class PaddleOCREngine:
         self.model_name = "PaddleOCR-v4"
 
     def _ocr_python(self) -> Optional[str]:
-        executable = Path(ai_settings.ocr_python_executable)
-        if not executable.is_absolute():
-            executable = Path.cwd() / executable
-        return str(executable) if ai_settings.ocr_enabled and executable.exists() else None
+        if not ai_settings.ocr_enabled:
+            return None
+        custom_exec = ai_settings.ocr_python_executable
+        if custom_exec and custom_exec.strip():
+            p = Path(custom_exec.strip())
+            if not p.is_absolute():
+                p = Path.cwd() / p
+            if p.exists():
+                return str(p)
+        return None
 
     def _extract_with_isolated_runtime(self, file_bytes: bytes, file_name: str) -> Tuple[List[OCRLine], float, Dict[str, Any]]:
         executable = self._ocr_python()

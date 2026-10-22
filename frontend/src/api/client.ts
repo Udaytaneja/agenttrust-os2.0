@@ -1,7 +1,7 @@
 import axios, { type AxiosInstance, type AxiosError } from 'axios';
 
 const getApiBaseUrl = (): string => {
-  let url = import.meta.env.VITE_API_BASE_URL as string | undefined;
+  const url = import.meta.env.VITE_API_BASE_URL as string | undefined;
   if (url && url.trim()) {
     let cleaned = url.trim().replace(/\/$/, '');
     if (cleaned.endsWith('/api/v1')) {
@@ -9,9 +9,12 @@ const getApiBaseUrl = (): string => {
     }
     return cleaned;
   }
-  // In production browser environment when no env var is provided, fallback to production backend URL
+  // In production browser environments, require explicit VITE_API_BASE_URL configuration
   if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    return 'https://bharosify-backend-2-0.onrender.com';
+    console.error(
+      'AgentTrust OS Configuration Error: VITE_API_BASE_URL environment variable is not defined for production build.'
+    );
+    return window.location.origin;
   }
   return 'http://127.0.0.1:8000';
 };

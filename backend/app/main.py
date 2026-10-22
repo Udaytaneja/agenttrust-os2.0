@@ -14,11 +14,13 @@ from backend.app.api.auth import router as auth_router
 from backend.app.api.bankers import router as bankers_router
 from backend.app.api.documents import router as documents_router
 from backend.app.api.financial import router as financial_router
+from backend.app.api.governance import router as governance_router
 from backend.app.api.loans import router as loans_router
 from backend.app.api.notifications import router as notifications_router
 from backend.app.api.payments import router as payments_router
 from backend.app.api.repayments import router as repayments_router
 from backend.app.api.trust import router as trust_router
+from backend.app.api.underwriting import router as underwriting_router
 from backend.app.api.users import router as users_router
 from backend.app.core.config import settings
 from backend.app.core.database import engine
@@ -63,6 +65,16 @@ async def lifespan(application: FastAPI):
     if settings.app_env == "development" and settings.database_url.startswith("sqlite"):
         async with engine.begin() as connection:
             await connection.run_sync(Base.metadata.create_all)
+
+    # Controlled account bootstrap (only runs if BOOTSTRAP_* env vars are provided)
+    try:
+        from backend.app.core.database import AsyncSessionLocal
+        from backend.app.services.bootstrap_service import bootstrap_initial_accounts
+        async with AsyncSessionLocal() as session:
+            await bootstrap_initial_accounts(session)
+    except Exception as exc:
+        logger.warning(f"Account bootstrap notice: {exc}")
+
     yield
 
 
@@ -150,6 +162,8 @@ api_v1_router.include_router(notifications_router)
 api_v1_router.include_router(audit_router)
 api_v1_router.include_router(ai_router)
 api_v1_router.include_router(agents_router)
+api_v1_router.include_router(governance_router)
+api_v1_router.include_router(underwriting_router)
 
 app.include_router(api_v1_router)
 

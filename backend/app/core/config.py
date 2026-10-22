@@ -65,7 +65,7 @@ class Settings(BaseSettings):
     )
     ocr_enabled: bool = Field(default=True, validation_alias="OCR_ENABLED")
     ocr_python_executable: str = Field(
-        default="ocr-env/Scripts/python.exe", validation_alias="OCR_PYTHON_EXECUTABLE"
+        default="", validation_alias="OCR_PYTHON_EXECUTABLE"
     )
     ocr_timeout_seconds: int = Field(default=30, validation_alias="OCR_TIMEOUT_SECONDS")
 
@@ -99,6 +99,19 @@ class Settings(BaseSettings):
         case_sensitive=False,
         extra="ignore",
     )
+
+    @field_validator("database_url")
+    @classmethod
+    def validate_database_url(cls, value: str, info) -> str:
+        # In production, require real PostgreSQL database connection
+        app_env = os.getenv("APP_ENV", "development").lower()
+        if app_env == "production":
+            if not value or value.startswith("sqlite"):
+                raise ValueError(
+                    "DATABASE_URL must be configured with a valid PostgreSQL connection in production. "
+                    "In-memory/local SQLite is not permitted in production."
+                )
+        return value
 
     @field_validator("default_language")
     @classmethod
